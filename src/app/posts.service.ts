@@ -1,6 +1,7 @@
 import { Injectable } from "@angular/core";
 import { HttpClient } from "@angular/common/http";
-import { map } from "rxjs/operators";
+import { catchError, map } from "rxjs/operators";
+import { Subject, throwError } from "rxjs";
 
 import { Post } from "./post.model";
 
@@ -8,7 +9,7 @@ import { Post } from "./post.model";
     providedIn: 'root'
 })
 export class PostsService {
-
+    error = new Subject<string>();
 
     constructor(private http: HttpClient) {}
 
@@ -17,6 +18,9 @@ export class PostsService {
             'https://testing-e500b-default-rtdb.firebaseio.com/posts.json', postData).subscribe(
                 (responseData) => {
                     console.log(responseData);
+                },
+                (error) => {
+                    this.error.next(error.message);
                 }
             );
     }
@@ -32,6 +36,10 @@ export class PostsService {
                     }
                 }
                 return postArray;
+            }),
+            catchError((errorRes) => {
+                // some task related to errorRes
+                return throwError(errorRes.message);
             })
         )
     }
