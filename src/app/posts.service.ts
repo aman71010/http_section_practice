@@ -35,4 +35,8 @@ export class PostsService {
             })
         )
     }
+
+    deletePosts(){
+        return this.http.delete('https://testing-e500b-default-rtdb.firebaseio.com/posts.json');
+    }
 }
